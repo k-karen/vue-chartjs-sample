@@ -3,8 +3,19 @@
     <v-toolbar
       fixed
       app
+      @click="openChartTypeModal=!openChartTypeModal"
     >
       <v-toolbar-title center v-text="title" />
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on">グラフタイプ</v-btn>
+        </template>
+        <v-list>
+          <v-list-tile v-for="(item, index) in chartTypes" :key="index">
+            <v-list-tile-title @click="changeChartType(index)">{{ item.name }}</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
       <v-spacer />
     </v-toolbar>
     <v-content>
@@ -16,16 +27,17 @@
         >
           <v-flex
             xs12
-            sm8
-            md6
+            lg12
           >
             <template v-if="!chartType">
               <v-card class="px-3 py-3">
-                <select v-model="chartType">
-                  <option disabled value=null>Please select graph type</option>
-                  <option value="PieChart">円グラフ</option>
-                  <option value="BarChart">棒グラフ</option>
-                </select>
+                <v-select
+                  v-model="chartType"
+                  :items="chartTypes"
+                  item-text="name"
+                  item-value="value"
+                  label='グラフタイプ選択'
+                ></v-select>
               </v-card>
             </template>
             <div :is="chartType"></div>
@@ -49,7 +61,23 @@ export default {
     return {
       fixed: false,
       title: '神グラフジェネレータ',
-      chartType: null
+      chartType: null,
+      openChartTypeModal: false,
+      chartTypes: [
+        {
+          value: 'PieChart',
+          name: '円グラフ'
+        },
+        {
+          value: 'BarChart',
+          name: '棒グラフ'
+        }
+      ]
+    }
+  },
+  methods: {
+    changeChartType (id) {
+      this.chartType = this.chartTypes[id].value
     }
   }
 }
