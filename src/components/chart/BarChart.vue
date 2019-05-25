@@ -27,7 +27,7 @@
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.label"></td>
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.value" type="tel"></td>
             <td style="text-align: center;"><input style="width:80%; border: 1px" v-model="item.color" type="color"></td>
-            <td style="text-align: center;"><span class="elevation-1 px-1" @click="deleteFormData(index)">x</span></td>
+            <td style="text-align: center;"><div class="elevation-1" @click="deleteFormData(index)">x</div></td>
           </tr>
           <tr>
             <td style="text-align: center;">上限</td>
@@ -216,7 +216,7 @@ export default {
       })
     },
     localStorageDataList () {
-      var keys = [{key: null, name: ''}]
+      var keys = [{key: null, name: '保存したデータを選んで下さい'}]
       for (var key in localStorage) {
         if (key.match(STORAGE_TITLE_REGEXP)) keys.push({key: key, name: key.replace(STORAGE_TITLE_REGEXP,'')})
       }

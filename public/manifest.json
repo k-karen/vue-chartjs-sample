@@ -1,6 +1,6 @@
 {
-  "name": "vue-chartjs-sample",
-  "short_name": "vue-chartjs-sample",
+  "name": "神グラフジェネレータ",
+  "short_name": "神グラフジェネレータ",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
