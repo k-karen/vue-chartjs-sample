@@ -1,46 +1,82 @@
 <template>
-  <div>
-    <div style="width: 100%; text-align: center;" class="elevation-1 my-2 px-1 py-1">
-      <span>グラフ名:</span> <input style="width: 80%; border: 1px solid #888" v-model="formData.options.title.text">
-    </div>
-    <table class="elevation-1">
-      <tr>
-        <th style="width: 30%;">項目名</th>
-        <th style="width: 30%;">値</th>
-        <th style="width: 20%;">色</th>
-        <th style="width: 15%;">削除</th>
-      </tr>
-      <tr v-for="(item, index) in formData.tableDatas" :key="index">
-        <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.label"></td>
-        <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.value" type="tel"></td>
-        <td style="text-align: center;"><input style="width:80%; border: 1px" v-model="item.color" type="color"></td>
-        <td style="text-align: center;"><span class="elevation-1 px-1" @click="deleteFormData(index)">x</span></td>
-      </tr>
-      <tr>
-        <td style="text-align: center;">上限</td>
-        <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
-        <td style="text-align: center;">下限</td>
-        <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
-      </tr>
-    </table>
-    <v-btn @click="addDataRow">行を追加する</v-btn>
-    <v-btn class="elevation-1">
-      <input style="border: 1px" v-model="globalChartColor" type="color">
-      <span @click="changeAllColor">統一</span>
-    </v-btn>
-    <v-btn class="elevation-1">
-      <span @click="randomizeAllColor">ランダム</span>
-    </v-btn>
-  <bar-chart-canvas :data="buildChartData()" :options="buildChartOptions()"/>
-  <div style="display:inline-block;" class="elevation-3" @click="saveChartData()">保存</div>
-  <select class="elevation-3" v-model="currentStorageKey">
-    <option value=null>読込</option>
-    <option v-for="storageData in localStorageDataList()" :value="storageData.key" :key="storageData.key" > {{ storageData.name }} </option>
-  </select>
-  <div style="display:inline-block;" class="elevation-1" @click="chartAsImageBase64()">pngとして表示する</div>
-  <div style="display:inline-block;" class="elevation-2" @click="deleteCurrentData()">削除</div>
-  <img id="canva-as-image" style="width:100%" src="">
-  </div>
+  <v-layout
+    justify-start
+    align-start
+    wrap
+    row
+  >
+    <v-flex
+      align-start
+      :lg6="!displayImage"
+      :lg4="displayImage"
+      sm12
+      xs12
+    >
+      <v-card>
+        <div style="width: 100%; text-align: center;" class="my-2 px-1 py-2">
+          <span>グラフ名:</span> <input style="width: 80%; border: 1px solid #888" v-model="formData.options.title.text">
+        </div>
+        <table class="my-1">
+          <tr>
+            <th style="width: 30%;">項目名</th>
+            <th style="width: 30%;">値</th>
+            <th style="width: 20%;">色</th>
+            <th style="width: 15%;">削除</th>
+          </tr>
+          <tr v-for="(item, index) in formData.tableDatas" :key="index">
+            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.label"></td>
+            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.value" type="tel"></td>
+            <td style="text-align: center;"><input style="width:80%; border: 1px" v-model="item.color" type="color"></td>
+            <td style="text-align: center;"><span class="elevation-1 px-1" @click="deleteFormData(index)">x</span></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;">上限</td>
+            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
+            <td style="text-align: center;">下限</td>
+            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
+          </tr>
+        </table>
+        <v-btn @click="addDataRow">行を追加する</v-btn>
+        <v-btn @click="changeAllColor" class="elevation-1">
+          <input style="border: 1px" v-model="globalChartColor" type="color">
+          <span >統一</span>
+        </v-btn>
+        <v-btn @click="randomizeAllColor" class="elevation-1">
+          <span>ランダム</span>
+        </v-btn>
+      </v-card>
+      <v-select
+        v-model="currentStorageKey"
+        :items="localStorageDataList()"
+        item-text="name"
+        item-value="key"
+      ></v-select>
+      <v-layout justify-space-between text-xs-center>
+        <v-flex xs4><v-btn class="elevation-1" @click="saveChartData()">保存</v-btn></v-flex>
+        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像として表示</v-btn></v-flex>
+        <v-flex xs4><v-btn class="elevation-1" @click="deleteCurrentData()">削除</v-btn></v-flex>
+      </v-layout>
+    </v-flex>
+    <v-flex
+      :lg6="!displayImage"
+      :lg4="displayImage"
+      sm12
+      xs12
+    >
+      <bar-chart-canvas :data="buildChartData()" :options="buildChartOptions()"/>
+    </v-flex>
+    <v-flex
+      v-show="displayImage"
+      lg4
+      sm12
+      xs12
+    >
+      <v-btn @click="displayImage=!displayImage" class="elevation-1">
+        <span>画像を非表示にする</span>
+      </v-btn>
+      <img id="canva-as-image" style="width:100%" src="">
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -88,7 +124,8 @@ export default {
       },
       //その他
       globalChartColor: DEFAULT_COLOR,
-      currentStorageKey: null
+      currentStorageKey: null,
+      displayImage: false
     }
   },
   watch: {
@@ -105,6 +142,7 @@ export default {
   methods: {
     chartAsImageBase64 () {
       if (!document.getElementById('bar-chart') || !document.getElementById('canva-as-image')) return
+      this.displayImage = true
       document.getElementById('canva-as-image').src
         = document.getElementById('bar-chart').toDataURL('image/png')
     },
@@ -178,7 +216,7 @@ export default {
       })
     },
     localStorageDataList () {
-      var keys = []
+      var keys = [{key: null, name: ''}]
       for (var key in localStorage) {
         if (key.match(STORAGE_TITLE_REGEXP)) keys.push({key: key, name: key.replace(STORAGE_TITLE_REGEXP,'')})
       }
