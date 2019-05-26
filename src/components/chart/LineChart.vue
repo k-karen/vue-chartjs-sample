@@ -27,11 +27,19 @@
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.value" type="tel"></td>
             <td colspan="2" style="text-align: center;"><div class="elevation-1 px-3" style="text-align: center; display: inline-block" @click="deleteFormData(index)">x</div></td>
           </tr>
+        </table>
+        <table class="my-1">
           <tr>
-            <td style="text-align: center;">上限</td>
-            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
-            <td style="text-align: center;"><span>下限</span></td>
-            <td style="text-align: center;"><input style="width:50%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
+            <td style="width:25%">上限</td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
+            <td style="width:25%"><span>下限</span></td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
+          </tr>
+          <tr>
+            <td style="width:25%">縦ラベル</td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].scaleLabel.labelString"></td>
+            <td style="width:25%"><span>横ラベル</span></td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.xAxes[0].scaleLabel.labelString"></td>
           </tr>
         </table>
         <v-btn small @click="addDataRow">行を追加する</v-btn>
@@ -39,9 +47,7 @@
           <template v-slot:activator="{ on }">
             <v-btn small>
               <span v-on="on" :style="{ background: `${bulidColor()}`}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span v-on="on">
-                色選択
-              </span>
+              <span v-on="on">色選択</span>
             </v-btn>
           </template>
           <color-palet v-model="formData.globalChartbackgroundColor" />
@@ -58,7 +64,7 @@
       ></v-select>
       <v-layout justify-space-between text-xs-center>
         <v-flex xs4><v-btn class="elevation-1" @click="saveChartData()">保存</v-btn></v-flex>
-        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像として表示</v-btn></v-flex>
+        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像表示</v-btn></v-flex>
         <v-flex xs4><v-btn class="elevation-1" @click="deleteCurrentData()">削除</v-btn></v-flex>
       </v-layout>
     </v-flex>
@@ -127,6 +133,16 @@ export default {
               ticks: {
                 suggestedMax: 100,
                 suggestedMin: 0
+              },
+              scaleLabel: {
+                display: true,
+                labelString: '縦軸ラベル'
+              }
+            }],
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: '横軸ラベル'
               }
             }]
           },
@@ -242,6 +258,7 @@ export default {
       return keys
     },
     bulidColor () {
+      if (!this.formData.globalChartbackgroundColor) return DEFAULT_COLOR
       return `rgba(${this.formData.globalChartbackgroundColor.red}, ${this.formData.globalChartbackgroundColor.green}, ${this.formData.globalChartbackgroundColor.blue}, ${this.formData.globalChartbackgroundColor.opacity})`
     },
     initFormData () {
@@ -257,6 +274,11 @@ export default {
           }
         ],
         options: {
+          elements: {
+            line: {
+              tension: 0
+            }
+          },
           title: {
             display: true,
             text: DEFAULT_TITLE
@@ -266,12 +288,28 @@ export default {
               ticks: {
                 suggestedMax: 100,
                 suggestedMin: 0
+              },
+              scaleLabel: {
+                display: true,
+                labelString: '縦軸ラベル'
+              }
+            }],
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: '横軸ラベル'
               }
             }]
           },
           legend: {
             display: false
           }
+        },
+        globalChartbackgroundColor: {
+          blue: 0,
+          red: 0,
+          green: 0,
+          opacity: 0.8
         }
       }
     }

@@ -29,11 +29,19 @@
             <td style="text-align: center;"><input style="width:80%; border: 1px" v-model="item.color" type="color"></td>
             <td style="text-align: center;"><div class="elevation-1" @click="deleteFormData(index)">x</div></td>
           </tr>
+        </table>
+        <table class="my-1">
           <tr>
-            <td style="text-align: center;">上限</td>
-            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
-            <td style="text-align: center;">下限</td>
-            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
+            <td style="width:25%">上限</td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
+            <td style="width:25%"><span>下限</span></td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
+          </tr>
+          <tr>
+            <td style="width:25%">縦ラベル</td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].scaleLabel.labelString"></td>
+            <td style="width:25%"><span>横ラベル</span></td>
+            <td style="width:25%"><input style="width:100%; border: 1px solid #888" v-model="formData.options.scales.xAxes[0].scaleLabel.labelString"></td>
           </tr>
         </table>
         <v-btn @click="addDataRow">行を追加する</v-btn>
@@ -53,7 +61,7 @@
       ></v-select>
       <v-layout justify-space-between text-xs-center>
         <v-flex xs4><v-btn class="elevation-1" @click="saveChartData()">保存</v-btn></v-flex>
-        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像として表示</v-btn></v-flex>
+        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像表示</v-btn></v-flex>
         <v-flex xs4><v-btn class="elevation-1" @click="deleteCurrentData()">削除</v-btn></v-flex>
       </v-layout>
     </v-flex>
@@ -114,6 +122,16 @@ export default {
               ticks: {
                 suggestedMax: 100,
                 suggestedMin: 0
+              },
+              scaleLabel: {
+                display: true,
+                labelString: '縦軸ラベル'
+              }
+            }],
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: '横軸ラベル'
               }
             }]
           },
@@ -242,6 +260,16 @@ export default {
               ticks: {
                 suggestedMax: 100,
                 suggestedMin: 0
+              },
+              scaleLabel: {
+                display: true,
+                labelString: '縦軸ラベル'
+              }
+            }],
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: '横軸ラベル'
               }
             }]
           },

@@ -47,7 +47,7 @@
       ></v-select>
       <v-layout justify-space-between text-xs-center>
         <v-flex xs4><v-btn class="elevation-1" @click="saveChartData()">保存</v-btn></v-flex>
-        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像として表示</v-btn></v-flex>
+        <v-flex xs4><v-btn class="elevation-1" @click="chartAsImageBase64()">画像表示</v-btn></v-flex>
         <v-flex xs4><v-btn class="elevation-1" @click="deleteCurrentData()">削除</v-btn></v-flex>
       </v-layout>
     </v-flex>
