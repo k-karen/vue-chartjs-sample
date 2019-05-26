@@ -51,11 +51,12 @@
 <script>
 import PieChart from '@/components/chart/PieChart.vue'
 import BarChart from '@/components/chart/BarChart.vue'
+import LineChart from '@/components/chart/LineChart.vue'
 
 
 export default {
   components: {
-    PieChart, BarChart
+    PieChart, BarChart, LineChart
   },
   data: () => {
     return {
@@ -71,6 +72,10 @@ export default {
         {
           value: 'BarChart',
           name: '棒グラフ'
+        },
+        {
+          value: 'LineChart',
+          name: '折れ線グラフ'
         }
       ]
     }
