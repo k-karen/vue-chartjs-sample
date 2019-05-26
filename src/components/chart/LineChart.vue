@@ -25,22 +25,29 @@
           <tr v-for="(item, index) in formData.tableDatas" :key="index">
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.label"></td>
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.value" type="tel"></td>
-            <td colspan="2" style="text-align: center;"><div class="elevation-1" @click="deleteFormData(index)">x</div></td>
+            <td colspan="2" style="text-align: center;"><div class="elevation-1 px-3" style="text-align: center; display: inline-block" @click="deleteFormData(index)">x</div></td>
           </tr>
           <tr>
             <td style="text-align: center;">上限</td>
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMax"></td>
-            <td style="text-align: center;">下限</td>
-            <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
+            <td style="text-align: center;"><span>下限</span></td>
+            <td style="text-align: center;"><input style="width:50%; border: 1px solid #888" v-model="formData.options.scales.yAxes[0].ticks.suggestedMin"></td>
           </tr>
         </table>
-        <v-btn @click="addDataRow">行を追加する</v-btn>
-        <v-btn @click="changeAllColor" class="elevation-1">
-          <input style="border: 1px" v-model="formData.globalChartColor" type="color">
-          <span >統一</span>
-        </v-btn>
-        <v-btn @click="randomizeAllColor" class="elevation-1">
-          <span>ランダム</span>
+        <v-btn small @click="addDataRow">行を追加する</v-btn>
+        <v-dialog width="300">
+          <template v-slot:activator="{ on }">
+            <v-btn small>
+              <span v-on="on" :style="{ background: `${bulidColor()}`}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <span v-on="on">
+                色選択
+              </span>
+            </v-btn>
+          </template>
+          <color-palet v-model="formData.globalChartbackgroundColor" />
+        </v-dialog>
+        <v-btn small @click="changeAllColor" class="elevation-1" style="display: inline-block;">
+          <span >色変更</span>
         </v-btn>
       </v-card>
       <v-select
@@ -62,7 +69,6 @@
       xs12
     >
       <line-chart-canvas :data="buildChartData()" :options="buildChartOptions()"/>
-      <color-palet/>
     </v-flex>
     <v-flex
       v-show="displayImage"
@@ -83,7 +89,7 @@ import LineChartCanvas from '@/components/chart/LineChartCanvas.vue'
 import ColorPalet from '@/components/ColorPalet.vue'
 const DEFAULT_LABEL = ''
 const DEFAULT_VALUE = 0
-const DEFAULT_COLOR = 'rgba(0, 0, 0, 0.8)'
+const DEFAULT_COLOR = 'rgba(0, 10, 100, 0.8)'
 const DEFAULT_TITLE = 'ここにタイトルが入ります'
 const LINE_CHART_STORAGE_PREFIX = 'LINECHART'
 const STORAGE_TITLE_REGEXP = new RegExp( '^'+ LINE_CHART_STORAGE_PREFIX + '::' + '[0-9a-f]{6}' + '::')
@@ -128,7 +134,12 @@ export default {
             display: false
           }
         },
-        globalChartbackgroundColor: DEFAULT_COLOR
+        globalChartbackgroundColor: {
+          blue: 0,
+          red: 0,
+          green: 0,
+          opacity: 0.8
+        }
       },
       //その他
       currentStorageKey: null,
@@ -216,14 +227,11 @@ export default {
       this.formData.tableDatas = tempDatas
     },
     changeAllColor () {
-      if  (!this.formData.globalChartColor) return
+      if  (!this.formData.globalChartbackgroundColor) return
+      const color = this.bulidColor()
       this.formData.tableDatas.forEach(oneTableData => {
-        oneTableData.color = this.formData.globalChartColor
-      })
-    },
-    randomizeAllColor () {
-      this.formData.tableDatas.forEach(oneTableData => {
-        oneTableData.color = this.generateRandomColor()
+        oneTableData.backgroundColor = color
+        oneTableData.borderColor = color
       })
     },
     localStorageDataList () {
@@ -232,6 +240,9 @@ export default {
         if (key.match(STORAGE_TITLE_REGEXP)) keys.push({key: key, name: key.replace(STORAGE_TITLE_REGEXP,'')})
       }
       return keys
+    },
+    bulidColor () {
+      return `rgba(${this.formData.globalChartbackgroundColor.red}, ${this.formData.globalChartbackgroundColor.green}, ${this.formData.globalChartbackgroundColor.blue}, ${this.formData.globalChartbackgroundColor.opacity})`
     },
     initFormData () {
       return {
