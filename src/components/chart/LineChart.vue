@@ -20,14 +20,12 @@
           <tr>
             <th style="width: 30%;">項目名</th>
             <th style="width: 30%;">値</th>
-            <th style="width: 20%;">色</th>
-            <th style="width: 15%;">削除</th>
+            <th colspan="2" style="width: 40%;">削除</th>
           </tr>
           <tr v-for="(item, index) in formData.tableDatas" :key="index">
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.label"></td>
             <td style="text-align: center;"><input style="width:80%; border: 1px solid #888" v-model="item.value" type="tel"></td>
-            <td style="text-align: center;"><input style="width:80%; border: 1px" v-model="item.color" type="color"></td>
-            <td style="text-align: center;"><div class="elevation-1" @click="deleteFormData(index)">x</div></td>
+            <td colspan="2" style="text-align: center;"><div class="elevation-1" @click="deleteFormData(index)">x</div></td>
           </tr>
           <tr>
             <td style="text-align: center;">上限</td>
@@ -38,7 +36,7 @@
         </table>
         <v-btn @click="addDataRow">行を追加する</v-btn>
         <v-btn @click="changeAllColor" class="elevation-1">
-          <input style="border: 1px" v-model="globalChartColor" type="color">
+          <input style="border: 1px" v-model="formData.globalChartColor" type="color">
           <span >統一</span>
         </v-btn>
         <v-btn @click="randomizeAllColor" class="elevation-1">
@@ -64,6 +62,7 @@
       xs12
     >
       <line-chart-canvas :data="buildChartData()" :options="buildChartOptions()"/>
+      <color-palet/>
     </v-flex>
     <v-flex
       v-show="displayImage"
@@ -81,16 +80,17 @@
 
 <script>
 import LineChartCanvas from '@/components/chart/LineChartCanvas.vue'
+import ColorPalet from '@/components/ColorPalet.vue'
 const DEFAULT_LABEL = ''
 const DEFAULT_VALUE = 0
-const DEFAULT_COLOR = '#aaaaaa'
+const DEFAULT_COLOR = 'rgba(0, 0, 0, 0.8)'
 const DEFAULT_TITLE = 'ここにタイトルが入ります'
 const LINE_CHART_STORAGE_PREFIX = 'LINECHART'
 const STORAGE_TITLE_REGEXP = new RegExp( '^'+ LINE_CHART_STORAGE_PREFIX + '::' + '[0-9a-f]{6}' + '::')
 
 export default {
   components: {
-    LineChartCanvas
+    LineChartCanvas, ColorPalet
   },
   data: () => {
     return {
@@ -101,13 +101,15 @@ export default {
           {
             label: DEFAULT_LABEL,
             value: DEFAULT_VALUE,
-            color: DEFAULT_COLOR
+            backgroundColor: DEFAULT_COLOR,
+            borderColor: DEFAULT_COLOR,
+            fill: false
           }
         ],
         options: {
           elements: {
             line: {
-                tension: 0, // ベジェ曲線を無効にする
+              tension: 0
             }
           },
           title: {
@@ -125,10 +127,10 @@ export default {
           legend: {
             display: false
           }
-        }
+        },
+        globalChartbackgroundColor: DEFAULT_COLOR
       },
       //その他
-      globalChartColor: DEFAULT_COLOR,
       currentStorageKey: null,
       displayImage: false
     }
@@ -180,7 +182,9 @@ export default {
         labels: this.formData.tableDatas.map(a => a.label),
         datasets: [{
           data: this.formData.tableDatas.map(a => a.value),
-          backgroundColor: this.formData.tableDatas.map(a => a.color)
+          backgroundColor: this.formData.tableDatas.map(a => a.backgroundColor),
+          borderColor:  this.formData.tableDatas.map(a => a.borderColor),
+          fill: this.formData.tableDatas.map(a => a.fill),
         }]
       }
     },
@@ -191,7 +195,9 @@ export default {
       this.formData.tableDatas.push({
         label: DEFAULT_LABEL,
         value: DEFAULT_VALUE,
-        color: this.generateRandomColor()
+        backgroundColor: DEFAULT_COLOR,
+        borderColor: DEFAULT_COLOR,
+        fill: false
       })
     },
     generateRandomColor () {
@@ -210,9 +216,9 @@ export default {
       this.formData.tableDatas = tempDatas
     },
     changeAllColor () {
-      if  (!this.globalChartColor) return
+      if  (!this.formData.globalChartColor) return
       this.formData.tableDatas.forEach(oneTableData => {
-        oneTableData.color = this.globalChartColor
+        oneTableData.color = this.formData.globalChartColor
       })
     },
     randomizeAllColor () {
@@ -234,7 +240,9 @@ export default {
           {
             label: DEFAULT_LABEL,
             value: DEFAULT_VALUE,
-            color: DEFAULT_COLOR
+            backgroundColor: DEFAULT_COLOR,
+            borderColor: DEFAULT_COLOR,
+            fill: false
           }
         ],
         options: {
